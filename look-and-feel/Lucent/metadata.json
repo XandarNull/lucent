@@ -1,0 +1,21 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Xandar Null"
+            }
+        ],
+        "Category": "Plasma Look And Feel",
+        "Description": "Lucent - Unified Translucent Breeze & Darkly Theme Suite",
+        "EnabledByDefault": true,
+        "Id": "Lucent",
+        "License": "GPLv3",
+        "Name": "Lucent",
+        "ServiceTypes": [
+            "Plasma/LookAndFeel"
+        ],
+        "Version": "1.0"
+    },
+    "X-Plasma-APIVersion": "2"
+}

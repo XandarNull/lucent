@@ -1,0 +1,45 @@
+# Maintainer: Xandar Null <https://github.com/your-username>
+pkgname=lucent-theme-git
+pkgver=1.0.r0.g$(date +%Y%m%d)
+pkgrel=1
+pkgdesc="Unified translucent dark theme suite for KDE Plasma 6 and Darkly"
+arch=('any')
+url="https://github.com/your-username/lucent-darkly"
+license=('GPL-3.0-or-later')
+depends=(
+    'plasma-workspace>=6.0'
+    'kcolorscheme'
+)
+optdepends=(
+    'darkly-bin: Qt6 application style and KDecoration3 window decoration for translucency'
+    'kwin-effects-better-blur-dx: smooth background blur for translucent windows'
+)
+makedepends=('git')
+source=("${pkgname}::git+${url}.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "${srcdir}/${pkgname}"
+    printf "1.0.r%s.%s" "$(git rev-list --count HEAD 2>/dev/null || echo 0)" "$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+}
+
+package() {
+    cd "${srcdir}/${pkgname}"
+
+    # Install Color Scheme
+    install -Dm644 color-schemes/Lucent.colors "${pkgdir}/usr/share/color-schemes/Lucent.colors"
+
+    # Install Plasma Desktop Theme
+    install -d "${pkgdir}/usr/share/plasma/desktoptheme/Lucent"
+    cp -dr --no-preserve=ownership desktoptheme/Lucent/* "${pkgdir}/usr/share/plasma/desktoptheme/Lucent/"
+
+    # Install Look-and-Feel Global Theme
+    install -d "${pkgdir}/usr/share/plasma/look-and-feel/Lucent"
+    cp -dr --no-preserve=ownership look-and-feel/Lucent/* "${pkgdir}/usr/share/plasma/look-and-feel/Lucent/"
+
+    # Install Darkly default configuration to doc / skel
+    install -Dm644 config/darklyrc "${pkgdir}/etc/skel/.config/darklyrc"
+    install -Dm644 config/darklyrc "${pkgdir}/usr/share/doc/${pkgname}/darklyrc"
+    install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+    install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
