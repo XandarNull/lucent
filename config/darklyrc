@@ -14,7 +14,7 @@ SunkenEffect=false
 UseNewCheckBox=false
 
 [Style]
-AdjustToDarkThemes=false
+AdjustToDarkThemes=true
 AnimationsDuration=200
 AnimationsEnabled=true
 AnimationSteps=30
@@ -49,6 +49,7 @@ TabBarAltStyle=false
 TabBarDrawCenteredTabs=false
 TabBarOpacity=60
 TabBarTabExpandFullWidth=false
+TabBGColor=15,17,26
 TabDrawHighlight=false
 TabUseBrighterCloseIcon=false
 TabUseHighlightColor=false
