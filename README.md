@@ -78,7 +78,8 @@ sudo apt install -y build-essential cmake extra-cmake-modules \
     libkdecorations3-dev qt6-base-dev qt6-declarative-dev \
     libkf6colorscheme-dev libkf6config-dev libkf6configwidgets-dev \
     libkf6coreaddons-dev libkf6guiaddons-dev libkf6i18n-dev \
-    libkf6iconthemes-dev libkf6windowsystem-dev
+    libkf6iconthemes-dev libkf6windowsystem-dev \
+    libkirigami-dev libkf6style-dev
 ```
 
 #### Fedora (40+):
@@ -87,7 +88,8 @@ sudo dnf install -y gcc-c++ cmake extra-cmake-modules \
     kdecoration-devel qt6-qtbase-devel qt6-qtdeclarative-devel \
     kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel \
     kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel \
-    kf6-kiconthemes-devel kf6-kwindowsystem-devel
+    kf6-kiconthemes-devel kf6-kwindowsystem-devel \
+    kf6-kirigami-devel kf6-frameworkintegration-devel
 ```
 
 #### openSUSE (Tumbleweed):
@@ -96,7 +98,8 @@ sudo zypper install -y gcc-c++ cmake extra-cmake-modules \
     kdecoration6-devel qt6-base-devel qt6-declarative-devel \
     kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel \
     kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel \
-    kf6-kiconthemes-devel kf6-kwindowsystem-devel
+    kf6-kiconthemes-devel kf6-kwindowsystem-devel \
+    kf6-kirigami-devel kf6-frameworkintegration-devel
 ```
 
 #### Arch Linux / EndeavourOS / Manjaro:
@@ -104,7 +107,8 @@ sudo zypper install -y gcc-c++ cmake extra-cmake-modules \
 sudo pacman -S --needed base-devel cmake extra-cmake-modules \
     kdecoration qt6-base qt6-declarative \
     kcolorscheme kconfig kconfigwidgets kcoreaddons \
-    kguiaddons ki18n kiconthemes kwindowsystem
+    kguiaddons ki18n kiconthemes kwindowsystem \
+    kirigami frameworkintegration
 ```
 
 ---

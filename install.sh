@@ -55,13 +55,13 @@ detect_distro_command() {
     fi
 
     if [[ "$ID" == "ubuntu" || "$ID" == "debian" || "$ID" == "pop" || "$ID" == "linuxmint" || "$ID" == "neon" || "$ID_LIKE" =~ (ubuntu|debian) ]]; then
-        echo "sudo apt update && sudo apt install -y build-essential cmake extra-cmake-modules libkdecorations3-dev qt6-base-dev qt6-declarative-dev libkf6colorscheme-dev libkf6config-dev libkf6configwidgets-dev libkf6coreaddons-dev libkf6guiaddons-dev libkf6i18n-dev libkf6iconthemes-dev libkf6windowsystem-dev"
+        echo "sudo apt update && sudo apt install -y build-essential cmake extra-cmake-modules libkdecorations3-dev qt6-base-dev qt6-declarative-dev libkf6colorscheme-dev libkf6config-dev libkf6configwidgets-dev libkf6coreaddons-dev libkf6guiaddons-dev libkf6i18n-dev libkf6iconthemes-dev libkf6windowsystem-dev libkirigami-dev libkf6style-dev"
     elif [[ "$ID" == "fedora" || "$ID_LIKE" =~ (fedora|rhel) ]]; then
-        echo "sudo dnf install -y gcc-c++ cmake extra-cmake-modules kdecoration-devel qt6-qtbase-devel qt6-qtdeclarative-devel kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel"
+        echo "sudo dnf install -y gcc-c++ cmake extra-cmake-modules kdecoration-devel qt6-qtbase-devel qt6-qtdeclarative-devel kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel kf6-kirigami-devel kf6-frameworkintegration-devel"
     elif [[ "$ID" =~ opensuse || "$ID_LIKE" =~ (suse|opensuse) ]]; then
-        echo "sudo zypper install -y cmake extra-cmake-modules gcc-c++ kdecoration6-devel qt6-base-devel qt6-declarative-devel kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel"
+        echo "sudo zypper install -y cmake extra-cmake-modules gcc-c++ kdecoration6-devel qt6-base-devel qt6-declarative-devel kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel kf6-kirigami-devel kf6-frameworkintegration-devel"
     elif [[ "$ID" == "arch" || "$ID_LIKE" =~ arch ]]; then
-        echo "sudo pacman -S --needed base-devel cmake extra-cmake-modules kdecoration qt6-base qt6-declarative kcolorscheme kconfig kconfigwidgets kcoreaddons kguiaddons ki18n kiconthemes kwindowsystem"
+        echo "sudo pacman -S --needed base-devel cmake extra-cmake-modules kdecoration qt6-base qt6-declarative kcolorscheme kconfig kconfigwidgets kcoreaddons kguiaddons ki18n kiconthemes kwindowsystem kirigami frameworkintegration"
     else
         echo "Please install CMake, Extra CMake Modules, KDecoration3, Qt6, and KF6 development packages using your system package manager."
     fi
