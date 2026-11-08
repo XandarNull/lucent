@@ -110,7 +110,7 @@ echo -e "  ${GREEN}✓${NC} CMake and C++ compiler found."
 
 # Step 2: Compile native C++ plugins
 echo -e "${BOLD}[2/6] Building native C++ Lucent plugins (lucent6 & org.kde.lucent)...${NC}"
-if ! cmake -B "${ROOT_DIR}/build" -S "${ROOT_DIR}" -DCMAKE_BUILD_TYPE=Release; then
+if ! cmake -B "${ROOT_DIR}/build" -S "${ROOT_DIR}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr; then
     echo -e ""
     echo -e "  ${RED}CMake configuration failed.${NC} You may be missing required development libraries."
     echo -e "  To install all required packages on your system, run:"

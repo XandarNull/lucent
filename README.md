@@ -139,7 +139,7 @@ If you prefer building and installing with standard CMake tools:
 
 ```bash
 # 1. Configure and compile
-cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
 cmake --build build -j$(nproc)
 
 # 2. Install plugins and themes globally (requires sudo)

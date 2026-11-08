@@ -7,6 +7,11 @@ project(
     LANGUAGES CXX
 )
 
+# Default to /usr prefix so plugins install into distro Qt6 directories (/usr/lib/qt6/plugins or /usr/lib/x86_64-linux-gnu/qt6/plugins)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Default install prefix" FORCE)
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
