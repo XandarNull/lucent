@@ -74,7 +74,7 @@ sudo dnf install cmake extra-cmake-modules kdecoration-devel qt6-qtbase-devel qt
 Clone the repository and run `install.sh`:
 
 ```bash
-git clone https://github.com/your-username/lucent.git
+git clone https://github.com/XandarNull/lucent.git
 cd lucent
 chmod +x install.sh
 ./install.sh --apply
