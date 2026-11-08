@@ -1,81 +1,156 @@
 # Lucent — Standalone Translucent KDE Plasma 6 Desktop Suite
 
-**Author:** Xandar Null  
-**License:** GPL-3.0-or-later  
-**Compatibility:** KDE Plasma 6 (Arch Linux, Fedora, openSUSE, Debian/Ubuntu KDE, Wayland & X11)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/License-GPL--3.0--or--later-blue.svg)](LICENSE)
+[![Platform: KDE Plasma 6](https://img.shields.io/badge/KDE-Plasma%206-orange.svg)](https://kde.org/plasma-desktop/)
+[![Qt: 6.7+](https://img.shields.io/badge/Qt-6.7%2B-green.svg)](https://www.qt.io/)
+
+**Lucent** is a high-performance, unified translucent dark desktop suite engineered specifically for **KDE Plasma 6**.
+
+Unlike standard themes that leave QWidget applications (such as Dolphin or Kate) opaque or create mismatched opacities between windows, Lucent includes **native C++ plugins** that seamlessly synchronize translucency and background blur across both **QWidget** and **QtQuick / Kirigami** applications.
+
+Everything is completely standalone: **no third-party theme packages or external configuration apps are required**.
 
 ---
 
-## Overview
+## ✨ Features
 
-**Lucent** is a high-performance, standalone translucent dark desktop suite engineered specifically for KDE Plasma 6. It includes native, lightweight C++ plugins for both the application style and window decorations, delivering seamless 60% background translucency and compositor blur with zero configuration bloat or third-party package dependencies.
-
-### What is Included:
-- **Application Style:** `Lucent` (`lucent6.so` Qt6 plugin)
-- **Window Decorations:** `Lucent` (`org.kde.lucent.so` KDecoration3 plugin)
-- **Color Scheme:** `Lucent` (`Lucent.colors` with 4-channel `R,G,B,A` roles)
-- **Plasma Desktop Style:** `Lucent` (Breeze-fallback with translucent panel and launcher)
-- **Global Theme:** `Lucent` (One-click Look-and-Feel package)
-
-All backgrounds (window surfaces, Dolphin file views and sidebars, Kirigami pages, menus, toolbars, and titlebars) share **60% opacity** (`alpha: 153` / `0.60`) over background blur. All foreground elements (text, folder icons, buttons, selection markers) remain **100% solid and crisp**.
-
----
-
-## Baked-In Styling Metrics
-
-- **Corner Radius:** 7 px on buttons, input fields, and widgets.
-- **Button Height:** 7 px padding height.
-- **Window Corners:** 3 px rounded top/bottom window decoration corners.
-- **Titlebar Buttons:** Large titlebar buttons for easy clicking and high contrast.
-- **Title Alignment:** Centered window title across the full titlebar width.
-- **Tabs:** Flat alternative tabs with purple accent underline on active tabs and clean spacing (no bottom lines on inactive tabs).
-- **Checkboxes:** Modern flat checkbox styling.
-- **Sidebar Separator:** Native Qt resize handle preserved with full drag functionality.
+- **Uniform 60% Translucency:** Window backgrounds, Dolphin file views and sidebars, menus, toolbars, and titlebars share a uniform 60% opacity (`alpha: 153` / `0.60`).
+- **100% Solid Foreground:** Text, icons, buttons, badges, and active selections remain completely solid, crisp, and readable against any wallpaper.
+- **Native C++ Performance:** Includes compiled `lucent6.so` (Qt6 Application Style) and `org.kde.lucent.so` (KDecoration3 Window Decoration) plugins.
+- **Zero Configuration Clutter:** All ideal metrics are pre-tuned and baked directly into the engine — no bloated settings modules or confusing dialog menus in System Settings.
+- **Tuned Metrics:**
+  - **Widget Corners:** 7 px corner radius on buttons, input fields, and widgets.
+  - **Button Height:** 7 px padding height for comfortable click targets.
+  - **Window Corners:** 3 px top/bottom window decoration corners.
+  - **Titlebar Buttons:** Large titlebar buttons for enhanced usability.
+  - **Titlebar Alignment:** Centered window title across the full titlebar width.
+  - **Clean Flat Tabs:** Alternative flat tabs with purple accent indicator and zero separator lines under inactive tabs.
+  - **Smooth Resizing:** Full native drag functionality for Dolphin's sidebar separator.
 
 ---
 
-## Quick Installation
+## 🔮 Recommended: Enhanced Background Blur
 
-### Automated Installer (Builds and installs everything):
+For the smoothest and highest-quality background blur behind translucent windows, installing **[kwin-effects-better-blur-dx](https://github.com/xarblu/kwin-effects-better-blur-dx)** is strongly recommended. It replaces the default KWin blur effect with optimized dual-filtering, eliminating banding and visual artifacts on translucent surfaces.
+
+### Installing Better Blur on Arch Linux:
 ```bash
+paru -S kwin-effects-better-blur-dx
+# or
+yay -S kwin-effects-better-blur-dx
+```
+
+### Enabling in System Settings:
+1. Open **System Settings** → **Desktop Effects**.
+2. Enable **Enhanced Blur (dx)** (and disable the default "Blur" effect).
+3. Click **Apply**.
+
+---
+
+## 📦 What is Included in the Suite
+
+```text
+Lucent Suite
+├── Application Style:       Lucent (lucent6.so)
+├── Window Decorations:      Lucent (org.kde.lucent.so)
+├── Color Scheme:            Lucent (4-channel RGBA .colors)
+├── Plasma Desktop Style:    Lucent (translucent panels & launcher)
+└── Global Theme:            Lucent (one-click Look-and-Feel package)
+```
+
+---
+
+## 🛠️ Build & Installation
+
+### 1. Install Prerequisites
+
+Make sure you have CMake, Extra CMake Modules, and Qt6/KF6 development packages installed:
+
+#### Arch Linux / EndeavourOS / Manjaro:
+```bash
+sudo pacman -S --needed cmake extra-cmake-modules kdecoration qt6-base qt6-declarative kcolorscheme kconfig kconfigwidgets kguiaddons ki18n kiconthemes kwindowsystem
+```
+
+#### Fedora:
+```bash
+sudo dnf install cmake extra-cmake-modules kdecoration-devel qt6-qtbase-devel qt6-qtdeclarative-devel kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel
+```
+
+---
+
+### 2. Fast Install (Automated Script)
+
+Clone the repository and run `install.sh`:
+
+```bash
+git clone https://github.com/your-username/lucent-darkly.git
+cd lucent-darkly
+chmod +x install.sh
 ./install.sh --apply
 ```
 
-If you have root access and want the C++ plugins installed system-wide to `/usr/lib/qt6/plugins`, run:
-```bash
-sudo cmake --install build
-```
-
-### Installation Options
-
+#### Optional Installer Flags:
 | Flag | Description | Example |
 | :--- | :--- | :--- |
-| `-a, --apply` | Automatically applies the theme and reloads KWin & Plasma | `./install.sh --apply` |
+| `-a, --apply` | Installs and immediately activates Lucent for your current session | `./install.sh --apply` |
 | `-o, --opacity <60\|70>` | Sets base opacity to 60% (default) or 70% | `./install.sh -a -o 70` |
 | `-b, --build-only` | Compiles the C++ plugins without installing | `./install.sh -b` |
-| `-h, --help` | Displays help message and command syntax | `./install.sh --help` |
+| `-h, --help` | Displays usage syntax and help | `./install.sh --help` |
 
 ---
 
-## Arch Linux / AUR (PKGBUILD)
+### 3. Manual Build & System-Wide Installation
 
-To build and install cleanly using pacman:
+If you prefer building and installing with standard CMake tools:
+
 ```bash
-cd packaging/aur
-makepkg -si
+# 1. Configure and compile
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+
+# 2. Install plugins and themes globally (requires sudo)
+sudo cmake --install build
+
+# 3. Refresh system cache and apply
+kbuildsycoca6
+plasma-apply-colorscheme Lucent
+plasma-apply-desktoptheme Lucent
+plasma-apply-lookandfeel -a Lucent
+qdbus6 org.kde.KWin /KWin reconfigure
 ```
 
 ---
 
-## Uninstallation
+## 🎨 How to Use / Apply Manually
 
-To remove all installed theme files and plugins:
+If you prefer configuring themes through the KDE graphical interface:
+
+1. **Global Theme:** Open **System Settings** → **Colors & Themes** → **Global Theme**, select **Lucent**, and click **Apply**.
+2. **Application Style:** Open **System Settings** → **Colors & Themes** → **Application Style**, select **Lucent**, and click **Apply**.
+3. **Window Decorations:** Open **System Settings** → **Colors & Themes** → **Window Decorations**, select **Lucent**, and click **Apply**.
+4. **Plasma Style:** Open **System Settings** → **Colors & Themes** → **Plasma Style**, select **Lucent**, and click **Apply**.
+5. **Color Scheme:** Open **System Settings** → **Colors & Themes** → **Colors**, select **Lucent**, and click **Apply**.
+
+---
+
+## 🔄 Uninstallation
+
+To remove Lucent and its compiled plugins:
 
 ```bash
 ./uninstall.sh
 ```
 
-To remove all files and revert your session back to stock Breeze Dark:
+To remove all files and automatically restore your session to the default **Breeze Dark** theme:
+
 ```bash
 ./uninstall.sh --revert
 ```
+
+---
+
+## 📄 License & Attribution
+
+- **Author:** Xandar Null
+- **License:** GNU General Public License v3.0 or later ([GPL-3.0-or-later](LICENSE))
+- **Based on:** The Qt translucency techniques pioneered by the open-source KDE community (Lightly / Darkly / Breeze).

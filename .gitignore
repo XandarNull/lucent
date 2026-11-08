@@ -1,6 +1,14 @@
+# Build and distribution artifacts
+build/
 dist/
+
+# Internal Agent & maintenance documentation (local pair programming only)
+agents.md
+AGENTS.md
+.agents/
+
+# Editor / backup files
 *.bak
 *~
 *.swp
 .DS_Store
-build/
