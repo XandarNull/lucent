@@ -35,14 +35,19 @@ cp -f "${ROOT_DIR}/color-schemes/Lucent.colors" "${KDE_STORE_DIR}/Lucent.colors"
 echo "-> Packaging Complete Suite Archive for GitHub Releases (Lucent-Suite-v${VERSION}.tar.gz)..."
 tar --exclude='.git' \
     --exclude='dist' \
+    --exclude='build' \
     --exclude='.gemini' \
     --exclude='*.swp' \
     --exclude='*~' \
     -czf "${DIST_DIR}/Lucent-Suite-v${VERSION}.tar.gz" -C "${ROOT_DIR}" \
+    CMakeLists.txt \
     install.sh \
     uninstall.sh \
+    package.sh \
     README.md \
     LICENSE \
+    src \
+    packaging \
     color-schemes \
     config \
     desktoptheme \

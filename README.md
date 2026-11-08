@@ -1,48 +1,49 @@
-# Lucent — Unified Translucent KDE Plasma 6 & Darkly Theme Suite
+# Lucent — Standalone Translucent KDE Plasma 6 Desktop Suite
 
 **Author:** Xandar Null  
-**License:** GPLv3  
+**License:** GPL-3.0-or-later  
 **Compatibility:** KDE Plasma 6 (Arch Linux, Fedora, openSUSE, Debian/Ubuntu KDE, Wayland & X11)
 
 ---
 
 ## Overview
 
-**Lucent** is a high-performance, unified translucent dark desktop suite engineered specifically for KDE Plasma 6. It eliminates mismatched window opacities by synchronizing:
-- **Darkly Application Style** (`darkly6.so`)
-- **Darkly Window Decoration** (`org.kde.darkly.so`)
-- **Lucent Color Scheme** (`Lucent.colors` with 4-channel `R,G,B,A` roles)
-- **Lucent Plasma Desktop Style** (Breeze-fallback with translucent panel and launcher)
-- **Lucent Global Theme** (One-click Look-and-Feel package)
+**Lucent** is a high-performance, standalone translucent dark desktop suite engineered specifically for KDE Plasma 6. It includes native, lightweight C++ plugins for both the application style and window decorations, delivering seamless 60% background translucency and compositor blur with zero configuration bloat or third-party package dependencies.
 
-All backgrounds (window surfaces, Dolphin file views and sidebars, Kirigami pages, menus, toolbars, and titlebars) share **60% opacity** (`alpha: 153` / `0.60`) over `kwin-effects-better-blur-dx`. All foreground elements (text, folder icons, buttons, selection markers) remain **100% solid and crisp**.
+### What is Included:
+- **Application Style:** `Lucent` (`lucent6.so` Qt6 plugin)
+- **Window Decorations:** `Lucent` (`org.kde.lucent.so` KDecoration3 plugin)
+- **Color Scheme:** `Lucent` (`Lucent.colors` with 4-channel `R,G,B,A` roles)
+- **Plasma Desktop Style:** `Lucent` (Breeze-fallback with translucent panel and launcher)
+- **Global Theme:** `Lucent` (One-click Look-and-Feel package)
+
+All backgrounds (window surfaces, Dolphin file views and sidebars, Kirigami pages, menus, toolbars, and titlebars) share **60% opacity** (`alpha: 153` / `0.60`) over background blur. All foreground elements (text, folder icons, buttons, selection markers) remain **100% solid and crisp**.
 
 ---
 
-## Prerequisites
+## Baked-In Styling Metrics
 
-1. **Darkly Application Style & Window Decoration (Qt6):**
-   - **Arch Linux / Manjaro / EndeavourOS:**
-     ```bash
-     yay -S darkly-bin
-     # or
-     paru -S darkly-bin
-     ```
-   - **From Source:** [https://github.com/Bali10050/Darkly](https://github.com/Bali10050/Darkly)
-2. **KWin Background Blur (Recommended):**
-   - Install `kwin-effects-better-blur-dx` (AUR) or ensure KDE's native Blur effect is enabled in **System Settings -> Desktop Effects -> Blur**.
+- **Corner Radius:** 7 px on buttons, input fields, and widgets.
+- **Button Height:** 7 px padding height.
+- **Window Corners:** 3 px rounded top/bottom window decoration corners.
+- **Titlebar Buttons:** Large titlebar buttons for easy clicking and high contrast.
+- **Title Alignment:** Centered window title across the full titlebar width.
+- **Tabs:** Flat alternative tabs with purple accent underline on active tabs and clean spacing (no bottom lines on inactive tabs).
+- **Checkboxes:** Modern flat checkbox styling.
+- **Sidebar Separator:** Native Qt resize handle preserved with full drag functionality.
 
 ---
 
 ## Quick Installation
 
-Clone this repository and run the automated installer:
-
+### Automated Installer (Builds and installs everything):
 ```bash
-git clone https://github.com/your-username/lucent-darkly.git
-cd lucent-darkly
-chmod +x install.sh
 ./install.sh --apply
+```
+
+If you have root access and want the C++ plugins installed system-wide to `/usr/lib/qt6/plugins`, run:
+```bash
+sudo cmake --install build
 ```
 
 ### Installation Options
@@ -51,109 +52,30 @@ chmod +x install.sh
 | :--- | :--- | :--- |
 | `-a, --apply` | Automatically applies the theme and reloads KWin & Plasma | `./install.sh --apply` |
 | `-o, --opacity <60\|70>` | Sets base opacity to 60% (default) or 70% | `./install.sh -a -o 70` |
+| `-b, --build-only` | Compiles the C++ plugins without installing | `./install.sh -b` |
 | `-h, --help` | Displays help message and command syntax | `./install.sh --help` |
+
+---
+
+## Arch Linux / AUR (PKGBUILD)
+
+To build and install cleanly using pacman:
+```bash
+cd packaging/aur
+makepkg -si
+```
 
 ---
 
 ## Uninstallation
 
-To remove all installed theme files and restore previous configurations:
+To remove all installed theme files and plugins:
 
 ```bash
-chmod +x uninstall.sh
+./uninstall.sh
+```
+
+To remove all files and revert your session back to stock Breeze Dark:
+```bash
 ./uninstall.sh --revert
-```
-The `--revert` flag restores your active session back to default **Breeze Dark**.
-
----
-
-## Packaging & Distribution
-
-If you want to distribute Lucent to other users or upload it to KDE Store:
-
-Run the included packager:
-```bash
-chmod +x package.sh
-./package.sh
-```
-
-This creates the `dist/` directory containing:
-
-1. **`dist/Lucent-Suite-v1.0.tar.gz`**:
-   The full standalone release archive. Attach this to your **GitHub Releases** page.
-2. **`dist/kde-store/`**:
-   Pre-packaged archives ready to upload to [store.kde.org](https://store.kde.org) (Pling / OpenDesktop):
-   - `Lucent-Global-Theme.tar.gz` &rarr; Upload to **Plasma 6 Global Themes**
-   - `Lucent-Plasma-Theme.tar.gz` &rarr; Upload to **Plasma 6 Desktop Themes**
-   - `Lucent.colors` &rarr; Upload to **Plasma 6 Color Schemes**
-3. **`packaging/aur/PKGBUILD`**:
-   Ready to submit to the Arch User Repository (AUR) under `lucent-theme-git`.
-
----
-
-## Directory Layout
-
-```text
-lucent_darkly/
-├── color-schemes/
-│   └── Lucent.colors                        # 4-channel RGBA color scheme
-├── config/
-│   └── darklyrc                             # Darkly style & windeco configuration
-├── desktoptheme/Lucent/                     # Standalone Plasma Desktop Style
-│   ├── metadata.json
-│   ├── plasmarc                             # Declares FallbackTheme=breeze-dark
-│   ├── colors                               # Plasma color definitions
-│   ├── widgets/
-│   │   ├── panel-background.svgz            # 60% translucent blurred bottom panel
-│   │   ├── line.svgz                        # Zero-opacity line separators for Kickoff/dialogs
-│   │   └── scrollbar.svgz                   # Zero-opacity scrollbar for Kickoff
-│   └── dialogs/background.svg               # 60% translucent blurred application launcher
-├── look-and-feel/Lucent/                    # One-Click Global Theme Package
-│   ├── metadata.json
-│   └── contents/defaults
-├── packaging/aur/
-│   └── PKGBUILD                             # Arch Linux AUR package definition
-├── install.sh                               # Automated installer with --apply and --opacity
-├── uninstall.sh                             # Automated uninstaller with --revert
-├── package.sh                               # Release packager for GitHub & KDE Store
-├── README.md                                # Documentation
-└── LICENSE                                  # GPLv3 License
-```
-
----
-
-## How to Adjust Translucency Between 60% and 70%
-
-If you wish to switch from 60% to 70% opacity manually without re-running the installer:
-
-### 1. Darkly Configuration (`~/.config/darklyrc`)
-Change the values under `[Style]` from `60` to `70`:
-```ini
-[Style]
-DolphinSidebarOpacity=70
-DolphinViewOpacity=70
-MenuBarOpacity=70
-MenuOpacity=70
-TabBarOpacity=70
-ToolBarOpacity=70
-```
-
-### 2. Color Scheme (`~/.local/share/color-schemes/Lucent.colors`)
-Change `,153` (60%) to `,179` (70%) on the following lines:
-- `[Colors:Window]` &rarr; `BackgroundNormal=15,17,26,179` and `BackgroundAlternate=47,52,63,179`
-- `[Colors:View]` &rarr; `BackgroundNormal=19,21,32,179` and `BackgroundAlternate=20,26,33,179`
-- `[Colors:Header]` &rarr; `BackgroundNormal=15,17,26,179` and `BackgroundAlternate=47,52,63,179`
-- `[Colors:Header:Inactive]` &rarr; `BackgroundNormal=15,17,26,179` and `BackgroundAlternate=47,52,63,179`
-- `[Colors:Complementary]` &rarr; `BackgroundNormal=15,17,26,179` and `BackgroundAlternate=47,52,63,179`
-- `[WM]` &rarr; `activeBackground=47,52,63,179`, `activeBlend=47,52,63,179`, `inactiveBackground=47,52,63,179`, `inactiveBlend=47,52,63,179`
-
-### 3. Desktop Theme SVGs (`~/.local/share/plasma/desktoptheme/Lucent/`)
-In `widgets/panel-background.svgz` and `dialogs/background.svg`:
-- Change `opacity:0.6` to `opacity:0.7`.
-
-### 4. Reload Desktop
-```bash
-plasma-apply-colorscheme Lucent
-plasma-apply-desktoptheme Lucent
-qdbus6 org.kde.KWin /KWin reconfigure
 ```

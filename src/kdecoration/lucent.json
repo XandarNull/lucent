@@ -1,0 +1,19 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Xandar Null"
+            }
+        ],
+        "Description": "Window decoration using the Lucent visual style for the Plasma Desktop",
+        "EnabledByDefault": true,
+        "Id": "org.kde.lucent",
+        "License": "GPL-3.0-or-later",
+        "Name": "Lucent",
+        "Version": "1.0"
+    },
+    "org.kde.kdecoration3": {
+        "blur": true,
+        "recommendedBorderSize": "None"
+    }
+}

@@ -1,0 +1,3 @@
+add_subdirectory(liblucentcommon)
+add_subdirectory(kstyle)
+add_subdirectory(kdecoration)

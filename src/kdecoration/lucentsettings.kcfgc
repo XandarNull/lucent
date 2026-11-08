@@ -1,0 +1,6 @@
+File=lucentsettingsdata.kcfg
+ClassName=InternalSettings
+NameSpace=Lucent
+Singleton=false
+Mutators=true
+GlobalEnums=true

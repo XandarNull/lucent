@@ -1,18 +1,12 @@
 [kdeglobals][KDE]
-widgetStyle=Darkly
+widgetStyle=Lucent
 
 [kdeglobals][General]
 ColorScheme=Lucent
-
-[kdeglobals][Icons]
-Theme=breeze-dark
-
-[kcminputrc][Mouse]
-cursorTheme=breeze_cursors
 
 [plasmarc][Theme]
 name=Lucent
 
 [kwinrc][org.kde.kdecoration2]
-library=org.kde.darkly
-theme=Darkly
+library=org.kde.lucent
+theme=Lucent

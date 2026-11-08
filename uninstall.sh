@@ -2,7 +2,7 @@
 # ==============================================================================
 # Lucent Theme Suite Uninstaller
 # Author: Xandar Null
-# License: GPLv3
+# License: GPL-3.0-or-later
 # Compatibility: KDE Plasma 6 (Linux)
 # ==============================================================================
 
@@ -71,7 +71,27 @@ DESKTOPTHEME_DIR="${HOME}/.local/share/plasma/desktoptheme/Lucent"
 LOOKANDFEEL_DIR="${HOME}/.local/share/plasma/look-and-feel/Lucent"
 CONFIG_DIR="${HOME}/.config"
 
-echo -e "${BOLD}[1/4] Removing Lucent color scheme...${NC}"
+echo -e "${BOLD}[1/5] Removing system C++ plugins...${NC}"
+SYSTEM_PLUGINS=(
+    "/usr/lib/qt6/plugins/styles/lucent6.so"
+    "/usr/lib/qt6/plugins/org.kde.kdecoration3/org.kde.lucent.so"
+    "/usr/share/kstyle/themes/lucent.themerc"
+)
+
+SUDO_CMD=""
+if [ "$EUID" -ne 0 ]; then
+    SUDO_CMD="sudo"
+fi
+
+for plugin in "${SYSTEM_PLUGINS[@]}"; do
+    if [ -f "$plugin" ]; then
+        echo -e "  Removing $plugin..."
+        $SUDO_CMD rm -f "$plugin"
+    fi
+done
+echo -e "  ${GREEN}✓${NC} Cleaned system plugins"
+
+echo -e "${BOLD}[2/5] Removing Lucent color scheme...${NC}"
 if [ -f "${COLOR_SCHEMES_DIR}/Lucent.colors" ]; then
     rm -f "${COLOR_SCHEMES_DIR}/Lucent.colors"
     echo -e "  ${GREEN}✓${NC} Removed ${COLOR_SCHEMES_DIR}/Lucent.colors"
@@ -79,7 +99,7 @@ else
     echo -e "  ${YELLOW}!${NC} Lucent.colors not found."
 fi
 
-echo -e "${BOLD}[2/4] Removing Plasma Desktop Theme & Look-and-Feel packages...${NC}"
+echo -e "${BOLD}[3/5] Removing Plasma Desktop Theme & Look-and-Feel packages...${NC}"
 if [ -d "${DESKTOPTHEME_DIR}" ]; then
     rm -rf "${DESKTOPTHEME_DIR}"
     echo -e "  ${GREEN}✓${NC} Removed ${DESKTOPTHEME_DIR}"
@@ -94,16 +114,17 @@ else
     echo -e "  ${YELLOW}!${NC} Look-and-feel directory not found."
 fi
 
-echo -e "${BOLD}[3/4] Checking darklyrc backups...${NC}"
-if [ -f "${CONFIG_DIR}/darklyrc.bak" ]; then
-    echo -e "  Found ${CONFIG_DIR}/darklyrc.bak. Restoring original configuration..."
-    mv -f "${CONFIG_DIR}/darklyrc.bak" "${CONFIG_DIR}/darklyrc"
-    echo -e "  ${GREEN}✓${NC} Restored original darklyrc"
-else
-    echo -e "  ${YELLOW}!${NC} No darklyrc.bak found. Keeping existing ${CONFIG_DIR}/darklyrc"
+echo -e "${BOLD}[4/5] Checking lucentrc backups...${NC}"
+if [ -f "${CONFIG_DIR}/lucentrc.bak" ]; then
+    echo -e "  Found ${CONFIG_DIR}/lucentrc.bak. Restoring original configuration..."
+    mv -f "${CONFIG_DIR}/lucentrc.bak" "${CONFIG_DIR}/lucentrc"
+    echo -e "  ${GREEN}✓${NC} Restored original lucentrc"
+elif [ -f "${CONFIG_DIR}/lucentrc" ]; then
+    rm -f "${CONFIG_DIR}/lucentrc"
+    echo -e "  ${GREEN}✓${NC} Removed ${CONFIG_DIR}/lucentrc"
 fi
 
-echo -e "${BOLD}[4/4] Updating Sycoca cache...${NC}"
+echo -e "${BOLD}[5/5] Updating Sycoca cache...${NC}"
 if command -v kbuildsycoca6 >/dev/null 2>&1; then
     kbuildsycoca6 >/dev/null 2>&1 || true
     echo -e "  ${GREEN}✓${NC} Cache refreshed"
@@ -117,6 +138,11 @@ if [ "${REVERT_DEFAULT}" = true ]; then
     fi
     if command -v plasma-apply-desktoptheme >/dev/null 2>&1; then
         plasma-apply-desktoptheme breeze-dark >/dev/null 2>&1 || true
+    fi
+    if command -v kwriteconfig6 >/dev/null 2>&1; then
+        kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle Breeze
+        kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key library org.kde.breeze
+        kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key theme Breeze
     fi
     if command -v plasma-apply-lookandfeel >/dev/null 2>&1; then
         plasma-apply-lookandfeel -a org.kde.breezedark.desktop >/dev/null 2>&1 || true

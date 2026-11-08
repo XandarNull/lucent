@@ -7,7 +7,7 @@
             }
         ],
         "Category": "Plasma Look And Feel",
-        "Description": "Lucent - Unified Translucent Breeze & Darkly Theme Suite",
+        "Description": "Lucent - Standalone Unified Translucent Theme Suite for KDE Plasma 6",
         "EnabledByDefault": true,
         "Id": "Lucent",
         "License": "GPLv3",

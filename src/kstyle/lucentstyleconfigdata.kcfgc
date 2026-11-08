@@ -1,0 +1,6 @@
+File=lucent.kcfg
+ClassName=StyleConfigData
+NameSpace=Lucent
+Singleton=true
+Mutators=true
+GlobalEnums=true

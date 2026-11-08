@@ -1,0 +1,5 @@
+[Misc]
+Name=Lucent
+Comment=Translucent widget style for Qt Applications
+[KDE]
+WidgetStyle=Lucent

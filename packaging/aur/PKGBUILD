@@ -2,19 +2,24 @@
 pkgname=lucent-theme-git
 pkgver=1.0.r0.g$(date +%Y%m%d)
 pkgrel=1
-pkgdesc="Unified translucent dark theme suite for KDE Plasma 6 and Darkly"
-arch=('any')
+pkgdesc="Standalone unified translucent theme suite with native C++ style and window decoration for KDE Plasma 6"
+arch=('x86_64')
 url="https://github.com/your-username/lucent-darkly"
 license=('GPL-3.0-or-later')
 depends=(
     'plasma-workspace>=6.0'
     'kcolorscheme'
+    'kdecoration'
+    'kconfig'
+    'kconfigwidgets'
+    'kguiaddons'
+    'ki18n'
+    'kiconthemes'
+    'kwindowsystem'
+    'qt6-base'
+    'qt6-declarative'
 )
-optdepends=(
-    'darkly-bin: Qt6 application style and KDecoration3 window decoration for translucency'
-    'kwin-effects-better-blur-dx: smooth background blur for translucent windows'
-)
-makedepends=('git')
+makedepends=('git' 'cmake' 'extra-cmake-modules' 'ninja')
 source=("${pkgname}::git+${url}.git")
 sha256sums=('SKIP')
 
@@ -23,23 +28,20 @@ pkgver() {
     printf "1.0.r%s.%s" "$(git rev-list --count HEAD 2>/dev/null || echo 0)" "$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
 }
 
+build() {
+    cmake -B build -S "${srcdir}/${pkgname}" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -GNinja
+    cmake --build build
+}
+
 package() {
-    cd "${srcdir}/${pkgname}"
+    DESTDIR="${pkgdir}" cmake --install build
 
-    # Install Color Scheme
-    install -Dm644 color-schemes/Lucent.colors "${pkgdir}/usr/share/color-schemes/Lucent.colors"
-
-    # Install Plasma Desktop Theme
-    install -d "${pkgdir}/usr/share/plasma/desktoptheme/Lucent"
-    cp -dr --no-preserve=ownership desktoptheme/Lucent/* "${pkgdir}/usr/share/plasma/desktoptheme/Lucent/"
-
-    # Install Look-and-Feel Global Theme
-    install -d "${pkgdir}/usr/share/plasma/look-and-feel/Lucent"
-    cp -dr --no-preserve=ownership look-and-feel/Lucent/* "${pkgdir}/usr/share/plasma/look-and-feel/Lucent/"
-
-    # Install Darkly default configuration to doc / skel
-    install -Dm644 config/darklyrc "${pkgdir}/etc/skel/.config/darklyrc"
-    install -Dm644 config/darklyrc "${pkgdir}/usr/share/doc/${pkgname}/darklyrc"
-    install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
-    install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    # Install Lucent default configuration to doc / skel
+    install -Dm644 "${srcdir}/${pkgname}/config/lucentrc" "${pkgdir}/etc/skel/.config/lucentrc"
+    install -Dm644 "${srcdir}/${pkgname}/config/lucentrc" "${pkgdir}/usr/share/doc/${pkgname}/lucentrc"
+    install -Dm644 "${srcdir}/${pkgname}/README.md" "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+    install -Dm644 "${srcdir}/${pkgname}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }

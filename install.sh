@@ -2,7 +2,7 @@
 # ==============================================================================
 # Lucent Theme Suite Installer
 # Author: Xandar Null
-# License: GPLv3
+# License: GPL-3.0-or-later
 # Compatibility: KDE Plasma 6 (Linux)
 # ==============================================================================
 
@@ -20,6 +20,7 @@ NC='\033[0m' # No Color
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OPACITY=60
 APPLY_NOW=false
+BUILD_ONLY=false
 
 print_banner() {
     echo -e "${PURPLE}${BOLD}"
@@ -29,7 +30,7 @@ print_banner() {
     echo " | |__| |_| | (_|  __/ | | || |_    | | | | | |  __/ | | | | |  __/"
     echo " |_____\__,_|\___\___|_| |_| \__|   |_| |_| |_|\___|_| |_| |_|\___|"
     echo -e "${NC}"
-    echo -e "${CYAN}Lucent Theme Suite Installer — Unified Translucent KDE Plasma 6 Theme${NC}"
+    echo -e "${CYAN}Lucent Theme Suite Installer — Standalone Translucent KDE Plasma 6 Suite${NC}"
     echo -e "${CYAN}Authored by: Xandar Null${NC}"
     echo "------------------------------------------------------------------"
 }
@@ -40,11 +41,12 @@ show_help() {
     echo "Options:"
     echo "  -a, --apply            Apply the theme immediately to the current Plasma session"
     echo "  -o, --opacity <60|70>  Set target opacity (default: 60)"
+    echo "  -b, --build-only       Compile native plugins without installing"
     echo "  -h, --help             Show this help message"
     echo ""
     echo "Examples:"
-    echo "  ./install.sh                  # Installs theme files without changing active theme"
-    echo "  ./install.sh --apply          # Installs and immediately activates Lucent"
+    echo "  ./install.sh                  # Builds and installs theme & plugins"
+    echo "  ./install.sh --apply          # Builds, installs and immediately activates Lucent"
     echo "  ./install.sh -a -o 70         # Installs and activates with 70% opacity"
 }
 
@@ -64,6 +66,10 @@ while [[ "$#" -gt 0 ]]; do
                 exit 1
             fi
             ;;
+        -b|--build-only)
+            BUILD_ONLY=true
+            shift
+            ;;
         -h|--help)
             print_banner
             show_help
@@ -79,19 +85,59 @@ done
 
 print_banner
 
-# Step 1: Check prerequisites
-echo -e "${BOLD}[1/5] Checking dependencies...${NC}"
-HAS_DARKLY=false
-if pacman -Qs darkly >/dev/null 2>&1 || [ -f /usr/lib/qt6/plugins/styles/darkly6.so ] || [ -f /usr/lib64/qt6/plugins/styles/darkly6.so ]; then
-    HAS_DARKLY=true
-    echo -e "  ${GREEN}✓${NC} Darkly style found."
-else
-    echo -e "  ${YELLOW}!${NC} Darkly is not installed. Lucent requires Darkly for window/view translucency."
-    echo -e "    On Arch Linux, install it via: ${CYAN}yay -S darkly-bin${NC} or ${CYAN}paru -S darkly-bin${NC}"
+# Step 1: Check dependencies
+echo -e "${BOLD}[1/6] Checking build dependencies...${NC}"
+MISSING_DEPS=()
+for cmd in cmake extra-cmake-modules kdecoration; do
+    if ! pacman -Q "$cmd" >/dev/null 2>&1 && ! command -v "$cmd" >/dev/null 2>&1; then
+        MISSING_DEPS+=("$cmd")
+    fi
+done
+
+if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
+    echo -e "  ${YELLOW}!${NC} Missing build dependencies: ${MISSING_DEPS[*]}"
+    echo -e "    Install with: ${CYAN}sudo pacman -S --needed cmake extra-cmake-modules kdecoration${NC}"
 fi
 
-# Step 2: Prepare target directories
-echo -e "${BOLD}[2/5] Preparing installation directories...${NC}"
+# Step 2: Compile native C++ plugins
+echo -e "${BOLD}[2/6] Building native C++ Lucent plugins (lucent6 & org.kde.lucent)...${NC}"
+cmake -B "${ROOT_DIR}/build" -S "${ROOT_DIR}" -DCMAKE_BUILD_TYPE=Release
+cmake --build "${ROOT_DIR}/build" -j"$(nproc)"
+echo -e "  ${GREEN}✓${NC} C++ plugins compiled successfully."
+
+if [ "${BUILD_ONLY}" = true ]; then
+    echo -e "${GREEN}${BOLD}Build complete! (Build-only requested)${NC}"
+    exit 0
+fi
+
+# Step 3: Install C++ plugins
+echo -e "${BOLD}[3/6] Installing C++ plugins...${NC}"
+if [ "$EUID" -eq 0 ]; then
+    cmake --install "${ROOT_DIR}/build"
+    echo -e "  ${GREEN}✓${NC} Installed native plugins to system."
+else
+    if sudo -n true 2>/dev/null; then
+        echo -e "  ${CYAN}Installing plugins system-wide via sudo...${NC}"
+        sudo cmake --install "${ROOT_DIR}/build"
+        echo -e "  ${GREEN}✓${NC} Installed native plugins to system."
+    else
+        echo -e "  ${CYAN}Installing plugins to user environment (~/.local)...${NC}"
+        mkdir -p "${HOME}/.local/lib/qt6/plugins/styles"
+        mkdir -p "${HOME}/.local/lib/qt6/plugins/org.kde.kdecoration3"
+        mkdir -p "${HOME}/.local/share/kstyle/themes"
+        mkdir -p "${HOME}/.config/plasma-workspace/env"
+
+        cp -f "${ROOT_DIR}/build/bin/lucent6.so" "${HOME}/.local/lib/qt6/plugins/styles/"
+        cp -f "${ROOT_DIR}/build/bin/org.kde.lucent.so" "${HOME}/.local/lib/qt6/plugins/org.kde.kdecoration3/"
+        cp -f "${ROOT_DIR}/src/kstyle/lucent.themerc" "${HOME}/.local/share/kstyle/themes/"
+        echo 'export QT_PLUGIN_PATH="$HOME/.local/lib/qt6/plugins${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"' > "${HOME}/.config/plasma-workspace/env/lucent-env.sh"
+        chmod +x "${HOME}/.config/plasma-workspace/env/lucent-env.sh"
+        echo -e "  ${GREEN}✓${NC} Installed plugins to ~/.local/lib/qt6/plugins and configured environment hook."
+    fi
+fi
+
+# Step 4: Install User Themes & Packages
+echo -e "${BOLD}[4/6] Installing user themes (Color Scheme, Plasma Style, Look-and-Feel)...${NC}"
 COLOR_SCHEMES_DIR="${HOME}/.local/share/color-schemes"
 DESKTOPTHEME_DIR="${HOME}/.local/share/plasma/desktoptheme/Lucent"
 LOOKANDFEEL_DIR="${HOME}/.local/share/plasma/look-and-feel/Lucent"
@@ -102,25 +148,20 @@ mkdir -p "${DESKTOPTHEME_DIR}/widgets" "${DESKTOPTHEME_DIR}/dialogs"
 mkdir -p "${LOOKANDFEEL_DIR}/contents"
 mkdir -p "${CONFIG_DIR}"
 
-# Step 3: Install Color Scheme
-echo -e "${BOLD}[3/5] Installing Color Scheme...${NC}"
 if [ "${OPACITY}" -eq 70 ]; then
     echo -e "  Configuring for 70% opacity (alpha 179)..."
     sed 's/,153/,179/g' "${ROOT_DIR}/color-schemes/Lucent.colors" > "${COLOR_SCHEMES_DIR}/Lucent.colors"
 else
     cp -f "${ROOT_DIR}/color-schemes/Lucent.colors" "${COLOR_SCHEMES_DIR}/Lucent.colors"
 fi
-echo -e "  ${GREEN}✓${NC} Installed to ${COLOR_SCHEMES_DIR}/Lucent.colors"
+echo -e "  ${GREEN}✓${NC} Installed Color Scheme to ${COLOR_SCHEMES_DIR}/Lucent.colors"
 
-# Step 4: Install Plasma Desktop Theme & Look-and-Feel
-echo -e "${BOLD}[4/5] Installing Desktop Theme & Look-and-Feel packages...${NC}"
 cp -f "${ROOT_DIR}/desktoptheme/Lucent/metadata.json" "${DESKTOPTHEME_DIR}/"
 cp -f "${ROOT_DIR}/desktoptheme/Lucent/plasmarc" "${DESKTOPTHEME_DIR}/"
 cp -f "${ROOT_DIR}/desktoptheme/Lucent/colors" "${DESKTOPTHEME_DIR}/"
 cp -f "${ROOT_DIR}/desktoptheme/Lucent/widgets/"* "${DESKTOPTHEME_DIR}/widgets/"
 cp -f "${ROOT_DIR}/desktoptheme/Lucent/dialogs/"* "${DESKTOPTHEME_DIR}/dialogs/"
 
-# Adjust SVG opacity if 70% was chosen
 if [ "${OPACITY}" -eq 70 ]; then
     gzip -dc "${DESKTOPTHEME_DIR}/widgets/panel-background.svgz" | sed 's/opacity:0.6/opacity:0.7/g' | gzip -cn9 > "${DESKTOPTHEME_DIR}/widgets/panel-background.svgz"
     sed -i 's/opacity:0.6/opacity:0.7/g' "${DESKTOPTHEME_DIR}/dialogs/background.svg"
@@ -131,22 +172,23 @@ cp -f "${ROOT_DIR}/look-and-feel/Lucent/metadata.json" "${LOOKANDFEEL_DIR}/"
 cp -f "${ROOT_DIR}/look-and-feel/Lucent/contents/defaults" "${LOOKANDFEEL_DIR}/contents/"
 echo -e "  ${GREEN}✓${NC} Installed Global Look-and-Feel to ${LOOKANDFEEL_DIR}"
 
-# Step 5: Install Darkly Configuration
-echo -e "${BOLD}[5/5] Installing Darkly Configuration...${NC}"
-if [ -f "${CONFIG_DIR}/darklyrc" ]; then
-    cp -f "${CONFIG_DIR}/darklyrc" "${CONFIG_DIR}/darklyrc.bak"
-    echo -e "  Backed up existing darklyrc to ${CONFIG_DIR}/darklyrc.bak"
+# Step 5: Install Lucent Configuration
+echo -e "${BOLD}[5/6] Installing Lucent configuration...${NC}"
+if [ -f "${CONFIG_DIR}/lucentrc" ]; then
+    cp -f "${CONFIG_DIR}/lucentrc" "${CONFIG_DIR}/lucentrc.bak"
+    echo -e "  Backed up existing lucentrc to ${CONFIG_DIR}/lucentrc.bak"
 fi
 
 if [ "${OPACITY}" -eq 70 ]; then
     sed -E 's/(DolphinSidebarOpacity|DolphinViewOpacity|MenuBarOpacity|MenuOpacity|TabBarOpacity|ToolBarOpacity)=60/\1=70/g' \
-        "${ROOT_DIR}/config/darklyrc" > "${CONFIG_DIR}/darklyrc"
+        "${ROOT_DIR}/config/lucentrc" > "${CONFIG_DIR}/lucentrc"
 else
-    cp -f "${ROOT_DIR}/config/darklyrc" "${CONFIG_DIR}/darklyrc"
+    cp -f "${ROOT_DIR}/config/lucentrc" "${CONFIG_DIR}/lucentrc"
 fi
-echo -e "  ${GREEN}✓${NC} Installed to ${CONFIG_DIR}/darklyrc"
+echo -e "  ${GREEN}✓${NC} Installed to ${CONFIG_DIR}/lucentrc"
 
-# Update Sycoca
+# Step 6: Refresh caches
+echo -e "${BOLD}[6/6] Refreshing system caches...${NC}"
 if command -v kbuildsycoca6 >/dev/null 2>&1; then
     kbuildsycoca6 >/dev/null 2>&1 || true
 fi
@@ -163,6 +205,11 @@ if [ "${APPLY_NOW}" = true ]; then
     if command -v plasma-apply-desktoptheme >/dev/null 2>&1; then
         plasma-apply-desktoptheme Lucent >/dev/null 2>&1 || true
     fi
+    if command -v kwriteconfig6 >/dev/null 2>&1; then
+        kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle Lucent
+        kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key library org.kde.lucent
+        kwriteconfig6 --file kwinrc --group org.kde.kdecoration2 --key theme Lucent
+    fi
     if command -v plasma-apply-lookandfeel >/dev/null 2>&1; then
         plasma-apply-lookandfeel -a Lucent >/dev/null 2>&1 || true
     fi
@@ -173,5 +220,5 @@ if [ "${APPLY_NOW}" = true ]; then
 else
     echo -e "To apply the theme, run:"
     echo -e "  ${BOLD}./install.sh --apply${NC}"
-    echo -e "Or apply it from ${BOLD}System Settings -> Colors / Plasma Style / Global Theme${NC}."
+    echo -e "Or apply it from ${BOLD}System Settings -> Colors / Application Style / Window Decorations / Global Theme${NC}."
 fi
