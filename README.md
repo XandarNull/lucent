@@ -20,21 +20,31 @@ Everything is completely standalone: **no third-party theme packages or external
 
 ---
 
-## 🔮 Recommended: Enhanced Background Blur
+## 🔮 Recommended: Background Blur
 
-For the smoothest and highest-quality background blur behind translucent windows, installing **[kwin-effects-better-blur-dx](https://github.com/xarblu/kwin-effects-better-blur-dx)** is strongly recommended. It replaces the default KWin blur effect with optimized dual-filtering, eliminating banding and visual artifacts on translucent surfaces.
+Lucent windows look best with background blur enabled so wallpapers and background windows soften smoothly behind them.
 
-### Installing Better Blur on Arch Linux:
-```bash
-paru -S kwin-effects-better-blur-dx
-# or
-yay -S kwin-effects-better-blur-dx
-```
+1. **Native KDE Blur (Works out-of-the-box on all distributions):**
+   - Open **System Settings** → **Desktop Effects**.
+   - Ensure **Blur** is checked and click **Apply**.
 
-### Enabling in System Settings:
-1. Open **System Settings** → **Desktop Effects**.
-2. Enable **Enhanced Blur (dx)** (and disable the default "Blur" effect).
-3. Click **Apply**.
+2. **Enhanced Blur (dx) (Recommended for artifact-free gradients):**
+   - For an even smoother blur with optimized dual-filtering, installing **[kwin-effects-better-blur-dx](https://github.com/xarblu/kwin-effects-better-blur-dx)** is recommended.
+   - **Arch Linux:**
+     ```bash
+     paru -S kwin-effects-better-blur-dx
+     # or
+     yay -S kwin-effects-better-blur-dx
+     ```
+   - **Ubuntu / Fedora / openSUSE (Build from source):**
+     ```bash
+     git clone https://github.com/xarblu/kwin-effects-better-blur-dx.git
+     cd kwin-effects-better-blur-dx
+     cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+     cmake --build build -j$(nproc)
+     sudo cmake --install build
+     ```
+   - In **System Settings** → **Desktop Effects**, enable **Enhanced Blur (dx)** (and disable the default "Blur" effect).
 
 ---
 
@@ -53,18 +63,48 @@ Lucent Suite
 
 ## 🛠️ Build & Installation
 
+### Compatibility
+> [!NOTE]
+> Lucent is engineered for **KDE Plasma 6** and **Qt 6**. Compatible distributions include **Kubuntu 24.10+ / KDE Neon**, **Fedora 40+**, **openSUSE Tumbleweed**, and **Arch Linux** (or any rolling release with Plasma 6).
+
 ### 1. Install Prerequisites
 
-Make sure you have CMake, Extra CMake Modules, and Qt6/KF6 development packages installed:
+Install CMake, Extra CMake Modules, and Qt6 / KDE Frameworks 6 development headers for your distribution:
+
+#### Ubuntu / Kubuntu (24.10+) / Debian Testing / KDE Neon:
+```bash
+sudo apt update
+sudo apt install -y build-essential cmake extra-cmake-modules \
+    libkdecorations3-dev qt6-base-dev qt6-declarative-dev \
+    libkf6colorscheme-dev libkf6config-dev libkf6configwidgets-dev \
+    libkf6coreaddons-dev libkf6guiaddons-dev libkf6i18n-dev \
+    libkf6iconthemes-dev libkf6windowsystem-dev
+```
+
+#### Fedora (40+):
+```bash
+sudo dnf install -y gcc-c++ cmake extra-cmake-modules \
+    kdecoration-devel qt6-qtbase-devel qt6-qtdeclarative-devel \
+    kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel \
+    kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel \
+    kf6-kiconthemes-devel kf6-kwindowsystem-devel
+```
+
+#### openSUSE (Tumbleweed):
+```bash
+sudo zypper install -y gcc-c++ cmake extra-cmake-modules \
+    kdecoration6-devel qt6-base-devel qt6-declarative-devel \
+    kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel \
+    kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel \
+    kf6-kiconthemes-devel kf6-kwindowsystem-devel
+```
 
 #### Arch Linux / EndeavourOS / Manjaro:
 ```bash
-sudo pacman -S --needed cmake extra-cmake-modules kdecoration qt6-base qt6-declarative kcolorscheme kconfig kconfigwidgets kguiaddons ki18n kiconthemes kwindowsystem
-```
-
-#### Fedora:
-```bash
-sudo dnf install cmake extra-cmake-modules kdecoration-devel qt6-qtbase-devel qt6-qtdeclarative-devel kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel
+sudo pacman -S --needed base-devel cmake extra-cmake-modules \
+    kdecoration qt6-base qt6-declarative \
+    kcolorscheme kconfig kconfigwidgets kcoreaddons \
+    kguiaddons ki18n kiconthemes kwindowsystem
 ```
 
 ---

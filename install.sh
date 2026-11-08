@@ -3,7 +3,7 @@
 # Lucent Theme Suite Installer
 # Author: Xandar Null
 # License: GPL-3.0-or-later
-# Compatibility: KDE Plasma 6 (Linux)
+# Compatibility: KDE Plasma 6 (Ubuntu, Fedora, Arch Linux, openSUSE, Debian)
 # ==============================================================================
 
 set -e
@@ -47,6 +47,26 @@ show_help() {
     echo "  ./install.sh --apply          # Builds, installs and immediately activates Lucent"
 }
 
+detect_distro_command() {
+    local ID=""
+    local ID_LIKE=""
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+    fi
+
+    if [[ "$ID" == "ubuntu" || "$ID" == "debian" || "$ID" == "pop" || "$ID" == "linuxmint" || "$ID" == "neon" || "$ID_LIKE" =~ (ubuntu|debian) ]]; then
+        echo "sudo apt update && sudo apt install -y build-essential cmake extra-cmake-modules libkdecorations3-dev qt6-base-dev qt6-declarative-dev libkf6colorscheme-dev libkf6config-dev libkf6configwidgets-dev libkf6coreaddons-dev libkf6guiaddons-dev libkf6i18n-dev libkf6iconthemes-dev libkf6windowsystem-dev"
+    elif [[ "$ID" == "fedora" || "$ID_LIKE" =~ (fedora|rhel) ]]; then
+        echo "sudo dnf install -y gcc-c++ cmake extra-cmake-modules kdecoration-devel qt6-qtbase-devel qt6-qtdeclarative-devel kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel"
+    elif [[ "$ID" =~ opensuse || "$ID_LIKE" =~ (suse|opensuse) ]]; then
+        echo "sudo zypper install -y cmake extra-cmake-modules gcc-c++ kdecoration6-devel qt6-base-devel qt6-declarative-devel kf6-kcolorscheme-devel kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel"
+    elif [[ "$ID" == "arch" || "$ID_LIKE" =~ arch ]]; then
+        echo "sudo pacman -S --needed base-devel cmake extra-cmake-modules kdecoration qt6-base qt6-declarative kcolorscheme kconfig kconfigwidgets kcoreaddons kguiaddons ki18n kiconthemes kwindowsystem"
+    else
+        echo "Please install CMake, Extra CMake Modules, KDecoration3, Qt6, and KF6 development packages using your system package manager."
+    fi
+}
+
 # Parse commandline arguments
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
@@ -73,23 +93,31 @@ done
 
 print_banner
 
-# Step 1: Check dependencies
-echo -e "${BOLD}[1/6] Checking build dependencies...${NC}"
-MISSING_DEPS=()
-for cmd in cmake extra-cmake-modules kdecoration; do
-    if ! pacman -Q "$cmd" >/dev/null 2>&1 && ! command -v "$cmd" >/dev/null 2>&1; then
-        MISSING_DEPS+=("$cmd")
-    fi
-done
-
-if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
-    echo -e "  ${YELLOW}!${NC} Missing build dependencies: ${MISSING_DEPS[*]}"
-    echo -e "    Install with: ${CYAN}sudo pacman -S --needed cmake extra-cmake-modules kdecoration${NC}"
+# Step 1: Check basic build tools
+echo -e "${BOLD}[1/6] Checking build environment...${NC}"
+HAS_COMPILER=false
+if command -v g++ >/dev/null 2>&1 || command -v clang++ >/dev/null 2>&1 || command -v c++ >/dev/null 2>&1; then
+    HAS_COMPILER=true
 fi
+
+if ! command -v cmake >/dev/null 2>&1 || [ "$HAS_COMPILER" = false ]; then
+    echo -e "  ${RED}Error: CMake or a C++ compiler is not installed.${NC}"
+    echo -e "  Run the following command for your Linux distribution to install prerequisites:"
+    echo -e "    ${CYAN}$(detect_distro_command)${NC}"
+    exit 1
+fi
+echo -e "  ${GREEN}✓${NC} CMake and C++ compiler found."
 
 # Step 2: Compile native C++ plugins
 echo -e "${BOLD}[2/6] Building native C++ Lucent plugins (lucent6 & org.kde.lucent)...${NC}"
-cmake -B "${ROOT_DIR}/build" -S "${ROOT_DIR}" -DCMAKE_BUILD_TYPE=Release
+if ! cmake -B "${ROOT_DIR}/build" -S "${ROOT_DIR}" -DCMAKE_BUILD_TYPE=Release; then
+    echo -e ""
+    echo -e "  ${RED}CMake configuration failed.${NC} You may be missing required development libraries."
+    echo -e "  To install all required packages on your system, run:"
+    echo -e "    ${CYAN}$(detect_distro_command)${NC}"
+    exit 1
+fi
+
 cmake --build "${ROOT_DIR}/build" -j"$(nproc)"
 echo -e "  ${GREEN}✓${NC} C++ plugins compiled successfully."
 
@@ -103,13 +131,12 @@ echo -e "${BOLD}[3/6] Installing C++ plugins...${NC}"
 if [ "$EUID" -eq 0 ]; then
     cmake --install "${ROOT_DIR}/build"
     echo -e "  ${GREEN}✓${NC} Installed native plugins to system."
-else
-    if sudo -n true 2>/dev/null; then
-        echo -e "  ${CYAN}Installing plugins system-wide via sudo...${NC}"
-        sudo cmake --install "${ROOT_DIR}/build"
+elif command -v sudo >/dev/null 2>&1; then
+    echo -e "  ${CYAN}Installing plugins system-wide (requires sudo)...${NC}"
+    if sudo cmake --install "${ROOT_DIR}/build"; then
         echo -e "  ${GREEN}✓${NC} Installed native plugins to system."
     else
-        echo -e "  ${CYAN}Installing plugins to user environment (~/.local)...${NC}"
+        echo -e "  ${YELLOW}System-wide install not completed. Installing to user environment (~/.local)...${NC}"
         mkdir -p "${HOME}/.local/lib/qt6/plugins/styles"
         mkdir -p "${HOME}/.local/lib/qt6/plugins/org.kde.kdecoration3"
         mkdir -p "${HOME}/.local/share/kstyle/themes"
@@ -122,6 +149,19 @@ else
         chmod +x "${HOME}/.config/plasma-workspace/env/lucent-env.sh"
         echo -e "  ${GREEN}✓${NC} Installed plugins to ~/.local/lib/qt6/plugins and configured environment hook."
     fi
+else
+    echo -e "  ${CYAN}Installing plugins to user environment (~/.local)...${NC}"
+    mkdir -p "${HOME}/.local/lib/qt6/plugins/styles"
+    mkdir -p "${HOME}/.local/lib/qt6/plugins/org.kde.kdecoration3"
+    mkdir -p "${HOME}/.local/share/kstyle/themes"
+    mkdir -p "${HOME}/.config/plasma-workspace/env"
+
+    cp -f "${ROOT_DIR}/build/bin/lucent6.so" "${HOME}/.local/lib/qt6/plugins/styles/"
+    cp -f "${ROOT_DIR}/build/bin/org.kde.lucent.so" "${HOME}/.local/lib/qt6/plugins/org.kde.kdecoration3/"
+    cp -f "${ROOT_DIR}/src/kstyle/lucent.themerc" "${HOME}/.local/share/kstyle/themes/"
+    echo 'export QT_PLUGIN_PATH="$HOME/.local/lib/qt6/plugins${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"' > "${HOME}/.config/plasma-workspace/env/lucent-env.sh"
+    chmod +x "${HOME}/.config/plasma-workspace/env/lucent-env.sh"
+    echo -e "  ${GREEN}✓${NC} Installed plugins to ~/.local/lib/qt6/plugins and configured environment hook."
 fi
 
 # Step 4: Install User Themes & Packages
