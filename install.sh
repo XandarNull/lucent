@@ -18,7 +18,6 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OPACITY=60
 APPLY_NOW=false
 BUILD_ONLY=false
 
@@ -40,14 +39,12 @@ show_help() {
     echo ""
     echo "Options:"
     echo "  -a, --apply            Apply the theme immediately to the current Plasma session"
-    echo "  -o, --opacity <60|70>  Set target opacity (default: 60)"
     echo "  -b, --build-only       Compile native plugins without installing"
     echo "  -h, --help             Show this help message"
     echo ""
     echo "Examples:"
     echo "  ./install.sh                  # Builds and installs theme & plugins"
     echo "  ./install.sh --apply          # Builds, installs and immediately activates Lucent"
-    echo "  ./install.sh -a -o 70         # Installs and activates with 70% opacity"
 }
 
 # Parse commandline arguments
@@ -56,15 +53,6 @@ while [[ "$#" -gt 0 ]]; do
         -a|--apply)
             APPLY_NOW=true
             shift
-            ;;
-        -o|--opacity)
-            if [[ "$2" == "60" || "$2" == "70" ]]; then
-                OPACITY="$2"
-                shift 2
-            else
-                echo -e "${RED}Error: Opacity must be either 60 or 70.${NC}"
-                exit 1
-            fi
             ;;
         -b|--build-only)
             BUILD_ONLY=true
@@ -148,12 +136,7 @@ mkdir -p "${DESKTOPTHEME_DIR}/widgets" "${DESKTOPTHEME_DIR}/dialogs"
 mkdir -p "${LOOKANDFEEL_DIR}/contents"
 mkdir -p "${CONFIG_DIR}"
 
-if [ "${OPACITY}" -eq 70 ]; then
-    echo -e "  Configuring for 70% opacity (alpha 179)..."
-    sed 's/,153/,179/g' "${ROOT_DIR}/color-schemes/Lucent.colors" > "${COLOR_SCHEMES_DIR}/Lucent.colors"
-else
-    cp -f "${ROOT_DIR}/color-schemes/Lucent.colors" "${COLOR_SCHEMES_DIR}/Lucent.colors"
-fi
+cp -f "${ROOT_DIR}/color-schemes/Lucent.colors" "${COLOR_SCHEMES_DIR}/Lucent.colors"
 echo -e "  ${GREEN}✓${NC} Installed Color Scheme to ${COLOR_SCHEMES_DIR}/Lucent.colors"
 
 cp -f "${ROOT_DIR}/desktoptheme/Lucent/metadata.json" "${DESKTOPTHEME_DIR}/"
@@ -161,11 +144,6 @@ cp -f "${ROOT_DIR}/desktoptheme/Lucent/plasmarc" "${DESKTOPTHEME_DIR}/"
 cp -f "${ROOT_DIR}/desktoptheme/Lucent/colors" "${DESKTOPTHEME_DIR}/"
 cp -f "${ROOT_DIR}/desktoptheme/Lucent/widgets/"* "${DESKTOPTHEME_DIR}/widgets/"
 cp -f "${ROOT_DIR}/desktoptheme/Lucent/dialogs/"* "${DESKTOPTHEME_DIR}/dialogs/"
-
-if [ "${OPACITY}" -eq 70 ]; then
-    gzip -dc "${DESKTOPTHEME_DIR}/widgets/panel-background.svgz" | sed 's/opacity:0.6/opacity:0.7/g' | gzip -cn9 > "${DESKTOPTHEME_DIR}/widgets/panel-background.svgz"
-    sed -i 's/opacity:0.6/opacity:0.7/g' "${DESKTOPTHEME_DIR}/dialogs/background.svg"
-fi
 echo -e "  ${GREEN}✓${NC} Installed Plasma Style to ${DESKTOPTHEME_DIR}"
 
 cp -f "${ROOT_DIR}/look-and-feel/Lucent/metadata.json" "${LOOKANDFEEL_DIR}/"
@@ -179,12 +157,7 @@ if [ -f "${CONFIG_DIR}/lucentrc" ]; then
     echo -e "  Backed up existing lucentrc to ${CONFIG_DIR}/lucentrc.bak"
 fi
 
-if [ "${OPACITY}" -eq 70 ]; then
-    sed -E 's/(DolphinSidebarOpacity|DolphinViewOpacity|MenuBarOpacity|MenuOpacity|TabBarOpacity|ToolBarOpacity)=60/\1=70/g' \
-        "${ROOT_DIR}/config/lucentrc" > "${CONFIG_DIR}/lucentrc"
-else
-    cp -f "${ROOT_DIR}/config/lucentrc" "${CONFIG_DIR}/lucentrc"
-fi
+cp -f "${ROOT_DIR}/config/lucentrc" "${CONFIG_DIR}/lucentrc"
 echo -e "  ${GREEN}✓${NC} Installed to ${CONFIG_DIR}/lucentrc"
 
 # Step 6: Refresh caches

@@ -17,15 +17,6 @@ Everything is completely standalone: **no third-party theme packages or external
 - **Uniform 60% Translucency:** Window backgrounds, Dolphin file views and sidebars, menus, toolbars, and titlebars share a uniform 60% opacity (`alpha: 153` / `0.60`).
 - **100% Solid Foreground:** Text, icons, buttons, badges, and active selections remain completely solid, crisp, and readable against any wallpaper.
 - **Native C++ Performance:** Includes compiled `lucent6.so` (Qt6 Application Style) and `org.kde.lucent.so` (KDecoration3 Window Decoration) plugins.
-- **Zero Configuration Clutter:** All ideal metrics are pre-tuned and baked directly into the engine — no bloated settings modules or confusing dialog menus in System Settings.
-- **Tuned Metrics:**
-  - **Widget Corners:** 7 px corner radius on buttons, input fields, and widgets.
-  - **Button Height:** 7 px padding height for comfortable click targets.
-  - **Window Corners:** 3 px top/bottom window decoration corners.
-  - **Titlebar Buttons:** Large titlebar buttons for enhanced usability.
-  - **Titlebar Alignment:** Centered window title across the full titlebar width.
-  - **Clean Flat Tabs:** Alternative flat tabs with purple accent indicator and zero separator lines under inactive tabs.
-  - **Smooth Resizing:** Full native drag functionality for Dolphin's sidebar separator.
 
 ---
 
@@ -83,8 +74,8 @@ sudo dnf install cmake extra-cmake-modules kdecoration-devel qt6-qtbase-devel qt
 Clone the repository and run `install.sh`:
 
 ```bash
-git clone https://github.com/your-username/lucent-darkly.git
-cd lucent-darkly
+git clone https://github.com/your-username/lucent.git
+cd lucent
 chmod +x install.sh
 ./install.sh --apply
 ```
@@ -93,7 +84,6 @@ chmod +x install.sh
 | Flag | Description | Example |
 | :--- | :--- | :--- |
 | `-a, --apply` | Installs and immediately activates Lucent for your current session | `./install.sh --apply` |
-| `-o, --opacity <60\|70>` | Sets base opacity to 60% (default) or 70% | `./install.sh -a -o 70` |
 | `-b, --build-only` | Compiles the C++ plugins without installing | `./install.sh -b` |
 | `-h, --help` | Displays usage syntax and help | `./install.sh --help` |
 
@@ -133,24 +123,10 @@ If you prefer configuring themes through the KDE graphical interface:
 
 ---
 
-## 🔄 Uninstallation
-
-To remove Lucent and its compiled plugins:
-
-```bash
-./uninstall.sh
-```
-
-To remove all files and automatically restore your session to the default **Breeze Dark** theme:
-
-```bash
-./uninstall.sh --revert
-```
-
----
-
 ## 📄 License & Attribution
 
 - **Author:** Xandar Null
 - **License:** GNU General Public License v3.0 or later ([GPL-3.0-or-later](LICENSE))
-- **Based on:** The Qt translucency techniques pioneered by the open-source KDE community (Lightly / Darkly / Breeze).
+- **Credits & Acknowledgements:**
+  - Special thanks to **[Darkly](https://github.com/Bali10050/Darkly)** by **Bali10050** for the underlying Qt6 translucency and blur engine techniques adapted for Lucent.
+  - Thanks to the upstream **Lightly** and **KDE Breeze** open-source developers whose foundational styling work powers modern Plasma aesthetics.
